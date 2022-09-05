@@ -1,0 +1,13 @@
+version: '3.4'
+services:
+  mevboost.avado.dnp.dappnode.eth:
+    image: 'mevboost.avado.dnp.dappnode.eth:0.0.2'
+    build:
+      context: ./build
+      args:
+        VERSION: v0.8.2
+    environment:
+      - NETWORK=mainnet
+      - >-
+        RELAYS=https://0xac6e77dfe25ecd6110b8e780608cce0dab71fdd5ebea22a16c0205200f2f8e2e3ad3b71d3499c54ad14d6c21b41a37ae@boost-relay.flashbots.net
+      - EXTRA_OPTS=
