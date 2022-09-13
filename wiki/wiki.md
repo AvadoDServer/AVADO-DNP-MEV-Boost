@@ -14,9 +14,19 @@ You can find the **MEV-Boost** package in the Avada DappStore
 
 ![](install.png)
 
-## Configuration
+## Configure your Validator
 
-You can configure MEV-Boost in the Avado UI via <http://my.ava.do/#/Packages/mevboost.avado.dnp.dappnode.eth>
+You can enable MEV-Boost in your validator ([Teku](http://teku.my.ava.do/settings) or [Prysm](http://prysm-beacon-chain-prater.my.ava.do/settings)) by clicking the check box, and applying the changes.
+
+![](teku.png)
+
+If you check the validator log, you should see entries like this from time to time:
+
+![](validatorlog.png)
+
+## Configure MEV-Boost
+
+For most users the default configuration should be OK, but you can  configure MEV-Boost via the Avado UI on <http://my.ava.do/#/Packages/mevboost.avado.dnp.dappnode.eth>
 
 The default configuration uses the FlashBots relay endpoint:
 ```
