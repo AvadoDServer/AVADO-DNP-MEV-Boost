@@ -1,11 +1,11 @@
 version: '3.4'
 services:
   mevboost.avado.dnp.dappnode.eth:
-    image: 'mevboost.avado.dnp.dappnode.eth:0.0.1'
+    image: 'mevboost.avado.dnp.dappnode.eth:0.0.2'
     build:
       context: ./build
       args:
-        VERSION: v0.8.2
+        VERSION: v1.0.0
     environment:
       - NETWORK=mainnet
       - >-
