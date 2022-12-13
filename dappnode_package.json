@@ -1,7 +1,7 @@
 {
   "name": "mevboost.avado.dnp.dappnode.eth",
-  "version": "0.0.4",
-  "upstream": "v1.3.2",
+  "version": "0.0.6",
+  "upstream": "v1.4.0",
   "title": "MEV-Boost",
   "description": "MEV-Boost is an open source middleware run by validators to access a competitive block-building market.",
   "avatar": "/ipfs/QmQBBt5xcXnXqbAUjquHmrMkn9WwMuDRyVSMNdnkdLpvfV",
@@ -11,7 +11,7 @@
     "environment": [
       "NETWORK=mainnet",
       "RELAYS=https://0xad0a8bb54565c2211cee576363f3a347089d2f07cf72679d16911d740262694cadb62d7fd7483f27afd714ca0f1b9118@bloxroute.ethical.blxrbdn.com",
-      "EXTRA_OPTS="
+      "EXTRA_OPTS=-min-bid 0.05"
     ],
     "restart": "always"
   },
