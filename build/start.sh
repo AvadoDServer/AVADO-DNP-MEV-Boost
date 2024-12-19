@@ -2,7 +2,7 @@
 
 echo "Starting MEV-Boost"
 
-# remove obsolete entry
+# remove obsolete entr(y/ies)
 RELAYS_FILTERED="${RELAYS/https:\/\/0xad0a8bb54565c2211cee576363f3a347089d2f07cf72679d16911d740262694cadb62d7fd7483f27afd714ca0f1b9118@bloxroute.ethical.blxrbdn.com,/}"
 
 echo "Network: ${NETWORK}"
