@@ -5,6 +5,7 @@
   "engines": { "node": ">=20" },
   "scripts": {
     "test": "node --test",
+    "test:start": "sh build/tests/test-start.sh",
     "check": "node scripts/check-relays.mjs && node scripts/render.mjs --check",
     "render": "node scripts/render.mjs",
     "probe": "node scripts/probe.mjs"

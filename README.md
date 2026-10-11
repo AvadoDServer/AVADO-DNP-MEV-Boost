@@ -76,7 +76,8 @@ The relay defaults inside the package are only updated when a new version is rel
 1. Branch from an up-to-date `main`.
 2. Run `node scripts/render.mjs package`. It rewrites the `RELAYS` default in `dappnode_package.json` and `docker-compose.yml` and `DEAD_RELAY_HOSTS` in `build/start.sh` from `relays.json`.
 3. Bump the version in `dappnode_package.json` and the image tag in `docker-compose.yml`.
-4. Open a pull request. The build workflow builds the package; when it is merged (with a merge commit, never a squash, because the release job applies the build's diff) the release workflow publishes the new version. The owner moves it to production.
+4. Run `npm run test:start`. It runs `build/start.sh` with plain `sh` against a stand-in for mev-boost and checks that retired relays are skipped, that "Relays in use" is printed, and that no minimum bid is passed unless `EXTRA_OPTS` sets one.
+5. Open a pull request. The build workflow builds the package; when it is merged (with a merge commit, never a squash, because the release job applies the build's diff) the release workflow publishes the new version. The owner moves it to production.
 
 When the `RELAYS` default in `dappnode_package.json` no longer matches `relays.json`, the test workflow prints a warning line in its log (not in the job summary, and the job still passes); that is the reminder to prepare a release.
 
@@ -90,6 +91,7 @@ Node 20 or newer, no dependencies.
 
 ```sh
 npm test                           # unit tests (node --test)
+npm run test:start                 # test build/start.sh with sh and a stand-in for mev-boost
 npm run check                      # validate relays.json and check relays.md is up to date
 npm run render                     # regenerate relays.md
 node scripts/render.mjs package    # write the relay defaults into the package files
