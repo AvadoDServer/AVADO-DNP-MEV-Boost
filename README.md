@@ -37,10 +37,14 @@ Each relay:
 Every Monday at 06:00 UTC the **Relay check** workflow (`.github/workflows/relay-check.yml`) runs `node scripts/probe.mjs`. It:
 
 1. Asks every relay in the list, plus any relay that is new on the [ethstaker relay list](https://github.com/eth-educators/ethstaker-guides/blob/main/MEV-relay-list.md), whether it is up (`/eth/v1/builder/status`, three tries each).
-2. Counts how many weekly checks in a row each live relay has failed, in `.relay-check/failures.json`. A relay is retired only after **three** failed weekly checks in a row; one or two misses are just warnings. A success resets the count.
+2. Counts how many weekly checks in a row each live relay has failed, in `.relay-check/failures.json`. A relay is retired only after **three** failed weekly checks in a row; one or two misses are just warnings. A success resets the count. A retired relay keeps its count until it answers again, so a retirement that is not merged yet is made again the next week instead of being lost.
 3. Brings a retired relay back as live when it answers again, but leaves it not recommended.
-4. Adds a relay that is new on the ethstaker list as not recommended, and warns (without changing anything) when the ethstaker list shows a different public key for a relay we already have.
-5. Opens or updates a pull request called **Relay check** with `relays.json`, `relays.md` and `.relay-check/failures.json`. The pull request text lists every relay, the changes and the warnings. When nothing changed, no pull request is opened.
+4. Adds a relay that is new on the ethstaker list as not recommended, and warns (without changing anything) when the ethstaker list shows a different public key for a relay we already have. A row on the ethstaker list that is not a valid relay URL (for example `http://`, or a path after the host) is left out with a warning, and the rest of the check goes on.
+5. Checks the new list the same way the tests do, then opens or updates a pull request called **Relay check** with `relays.json`, `relays.md` and `.relay-check/failures.json`. The pull request text lists every relay, the changes and the warnings. A pull request opens whenever one of those three files changed, including when only a failure count went up. When none of them changed, no pull request is opened.
+
+Some weeks the pull request only carries warnings (a relay missed one or two checks). Merging those is optional. Each run starts from the counts on the open `relay-check` branch, so missed checks keep adding up whether or not the warning-only pull request was merged.
+
+The weekly pull request needs the repository setting **Allow GitHub Actions to create and approve pull requests** (Settings → Actions → General → Workflow permissions). A pull request opened by a workflow does not start the test workflow, so the check validates the list in the same run before it opens the pull request.
 
 Nothing reaches the boxes until the owner reviews and merges that pull request. Whether a relay should be recommended is always the owner's decision: edit `recommended` in the pull request before merging.
 
@@ -52,7 +56,7 @@ When a change to `relays.json` lands on `main`, the **Publish relay list** workf
 
 The Relays card on the MEV-Boost page of the AVADO Admin reads that value, so boxes see the new list the next time the card is opened, without a package release. When bo.ava.do cannot be reached, the card falls back to the copy bundled with the Admin.
 
-The publish workflow can also be started by hand from the Actions tab (Run workflow).
+The publish workflow can also be started by hand from the Actions tab (Run workflow). It only publishes when started on `main`, so an unmerged list can never reach the boxes.
 
 ### The `BO_ADMIN_TOKEN` secret
 
@@ -74,7 +78,7 @@ The relay defaults inside the package are only updated when a new version is rel
 3. Bump the version in `dappnode_package.json` and the image tag in `docker-compose.yml`.
 4. Open a pull request. The build workflow builds the package; when it is merged (with a merge commit, never a squash, because the release job applies the build's diff) the release workflow publishes the new version. The owner moves it to production.
 
-The test workflow warns when the `RELAYS` default in `dappnode_package.json` no longer matches `relays.json`; that is the reminder to prepare a release.
+When the `RELAYS` default in `dappnode_package.json` no longer matches `relays.json`, the test workflow prints a warning line in its log (not in the job summary, and the job still passes); that is the reminder to prepare a release.
 
 ## Minimum bid
 
