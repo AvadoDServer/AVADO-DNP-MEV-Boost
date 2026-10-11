@@ -2,3 +2,4 @@
 build_*
 releases.json
 testKeys
+node_modules/
