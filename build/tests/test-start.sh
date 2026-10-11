@@ -121,6 +121,7 @@ run_start "${RETIRED_URL}" ""
 [ "${STATUS}" -eq 1 ] || fail "start.sh exited with ${STATUS}, expected 1"
 [ ! -f "${ARGS}" ] || fail "mev-boost was started without usable relays"
 expect_output "Skipping retired relay: ${RETIRED_HOST}"
+expect_output "Relays in use: 0"
 expect_output "no usable relays"
 end
 

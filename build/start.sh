@@ -9,7 +9,7 @@ MEV_BOOST_BIN=${MEV_BOOST_BIN:-/app/mev-boost}
 # dappnode_package.json, but existing installs keep their persisted RELAYS value,
 # which still names relays that no longer resolve. Without this, mev-boost logs a
 # connection error for each one on every status check.
-DEAD_RELAY_HOSTS="bloxroute.ethical.blxrbdn.com builder-relay-mainnet.blocknative.com mainnet-relay.securerpc.com proof-relay.ponrelay.com"
+DEAD_RELAY_HOSTS="bloxroute.max-profit.blxrbdn.com bloxroute.ethical.blxrbdn.com builder-relay-mainnet.blocknative.com mainnet-relay.securerpc.com proof-relay.ponrelay.com"
 
 OLD_IFS=$IFS
 IFS=,
@@ -35,12 +35,12 @@ for relay in "$@"; do
   fi
 done
 
+echo "Relays in use: $(printf '%s' "${RELAYS_FILTERED}" | tr ',' '\n' | grep -c .)"
+
 if [ -z "${RELAYS_FILTERED}" ]; then
   echo "ERROR: no usable relays configured. Set RELAYS to at least one active relay."
   exit 1
 fi
-
-echo "Relays in use: $(printf '%s' "${RELAYS_FILTERED}" | tr ',' '\n' | grep -c .)"
 
 echo "Network: ${NETWORK}"
 echo "Relays: ${RELAYS_FILTERED}"

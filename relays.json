@@ -53,10 +53,10 @@
       "url": "https://0x8c7d33605ecef85403f8b7289c8058f440cbb6bf72b055dfe2f3e2c6695b6a1ea5a9cd0eb3a7982927a463feb4c3dae2@relay.wenmerge.com",
       "about": "https://relay.wenmerge.com",
       "filtering": "none",
-      "recommended": true,
+      "recommended": false,
       "status": "live",
       "statusSince": "2026-10-11",
-      "note": "Did not answer when checked on 2026-10-11. It stays on the list until it fails three weekly checks in a row."
+      "note": "Not answering on 2026-10-11; not recommended until the weekly check sees it answer."
     },
     {
       "id": "flashbots",
@@ -75,10 +75,10 @@
       "url": "https://0x8b5d2e73e2a3a55c6c87b8b6eb92e0149a125c852751db1422fa951e42a09b82c142c3ea98d0d9930b056a3bc9896b8f@bloxroute.max-profit.blxrbdn.com",
       "about": "https://bloxroute.com/",
       "filtering": "sanctions",
-      "recommended": true,
-      "status": "live",
+      "recommended": false,
+      "status": "retired",
       "statusSince": "2026-10-11",
-      "note": "Did not answer when checked on 2026-10-11. It stays on the list until it fails three weekly checks in a row."
+      "note": "No DNS record since at least 2026-10-11; retired by hand. The weekly check revives it if it answers again."
     },
     {
       "id": "bloxroute-regulated",
