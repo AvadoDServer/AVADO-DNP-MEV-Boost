@@ -1,0 +1,25 @@
+name: Relay check
+on:
+  schedule: [{ cron: "0 6 * * 1" }]
+  workflow_dispatch:
+permissions: { contents: write, pull-requests: write }
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: node scripts/probe.mjs
+      - name: Open or update the PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: relay-check
+          commit-message: "chore: relay check ${{ github.run_started_at }}"
+          title: "Relay check"
+          body-path: .relay-check/summary.md
+          add-paths: |
+            relays.json
+            relays.md
+            .relay-check/failures.json
+          delete-branch: true
