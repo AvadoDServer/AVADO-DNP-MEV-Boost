@@ -4,7 +4,7 @@
   "type": "module",
   "engines": { "node": ">=20" },
   "scripts": {
-    "test": "node --test scripts/",
+    "test": "node --test",
     "check": "node scripts/check-relays.mjs && node scripts/render.mjs --check",
     "render": "node scripts/render.mjs",
     "probe": "node scripts/probe.mjs"
