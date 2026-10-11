@@ -1,0 +1,44 @@
+name: Relay check
+on:
+  schedule: [{ cron: "0 6 * * 1" }]
+  workflow_dispatch:
+permissions: { contents: write, pull-requests: write }
+jobs:
+  check:
+    # A manual run from another branch must never open a PR from an unmerged list.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      # The weekly PR may still be open; carry its failure counts on so missed
+      # checks keep adding up even when a warning-only PR is not merged.
+      # Written through a temp file so a missing file never leaves an empty one.
+      - name: Carry failure counts from the open PR
+        run: |
+          if git fetch --depth=1 origin relay-check 2>/dev/null \
+            && git show FETCH_HEAD:.relay-check/failures.json > "$RUNNER_TEMP/failures.json" 2>/dev/null; then
+            mv "$RUNNER_TEMP/failures.json" .relay-check/failures.json
+            echo "Using the failure counts from the relay-check branch."
+          else
+            echo "No failure counts on a relay-check branch; using the ones from main."
+          fi
+      - run: node scripts/probe.mjs
+      # PRs opened with GITHUB_TOKEN start no other workflow, so validate here.
+      - run: node scripts/check-relays.mjs
+      - run: node scripts/render.mjs --check
+      - id: date
+        run: echo "today=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+      - name: Open or update the PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: relay-check
+          commit-message: "chore: relay check ${{ steps.date.outputs.today }}"
+          title: "Relay check"
+          body-path: .relay-check/summary.md
+          add-paths: |
+            relays.json
+            relays.md
+            .relay-check/failures.json
+          delete-branch: true

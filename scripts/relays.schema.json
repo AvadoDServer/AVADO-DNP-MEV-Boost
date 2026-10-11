@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "relays.schema.json",
+  "title": "AVADO MEV-Boost relay list",
+  "description": "Editor help only. scripts/lib/relays.mjs (validateRelays) is the check that counts; it also rejects duplicate ids and hosts.",
+  "type": "object",
+  "required": ["schema", "updatedAt", "network", "relays"],
+  "properties": {
+    "schema": { "const": 1 },
+    "updatedAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "network": { "const": "mainnet" },
+    "relays": { "type": "array", "items": { "$ref": "#/definitions/relay" } }
+  },
+  "definitions": {
+    "relay": {
+      "type": "object",
+      "required": ["id", "name", "url", "about", "filtering", "recommended", "status", "statusSince", "note"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "name": { "type": "string", "minLength": 1 },
+        "url": { "type": "string", "pattern": "^https?://0x[0-9a-fA-F]{96}@" },
+        "about": { "type": "string", "pattern": "^https://" },
+        "filtering": { "enum": ["none", "sanctions"] },
+        "recommended": { "type": "boolean" },
+        "status": { "enum": ["live", "retired"] },
+        "statusSince": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "note": { "type": "string" }
+      },
+      "if": { "properties": { "recommended": { "const": true } }, "required": ["recommended"] },
+      "then": { "properties": { "status": { "const": "live" } } }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+name: Publish relay list
+on:
+  push:
+    branches: [main]
+    paths: [relays.json]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  publish:
+    # A manual run from another branch must never publish an unmerged list.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: node scripts/check-relays.mjs
+      - run: node scripts/render.mjs --check
+      - run: node scripts/publish.mjs
+        env:
+          BO_ADMIN_TOKEN: ${{ secrets.BO_ADMIN_TOKEN }}
