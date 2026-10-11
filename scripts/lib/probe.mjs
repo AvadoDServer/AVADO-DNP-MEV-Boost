@@ -1,4 +1,4 @@
-import { relayHost, relayPubkey } from "./relays.mjs";
+import { relayHost, relayPubkey, validateRelays } from "./relays.mjs";
 
 export const STRIKES = 3;
 
@@ -47,12 +47,13 @@ export function decide({ doc, probes, ethstaker, failures, today }) {
       delete newFailures[host];
     } else if (r.status === "live") {
       const n = (newFailures[host] || 0) + 1;
+      newFailures[host] = n;
       if (n >= STRIKES) {
+        // The count stays: if this retirement is not merged before next week, the
+        // relay is still live on main and must be retired again, not restart at 1.
         Object.assign(r, { status: "retired", statusSince: today, recommended: false });
-        delete newFailures[host];
         changes.push(`retired ${r.name} after ${STRIKES} failed weekly checks`);
       } else {
-        newFailures[host] = n;
         warnings.push(`${r.name} did not answer (${n} of ${STRIKES})`);
       }
     } else if (r.status === "retired" && probe.ok) {
@@ -67,15 +68,12 @@ export function decide({ doc, probes, ethstaker, failures, today }) {
   for (const row of ethstaker) {
     const known = byHost.get(row.host);
     if (known) {
-      if (row.pubkey !== relayPubkey(known.url)) warnings.push(`pubkey differs for ${known.name}; check by hand`);
-      continue;
-    }
-    if (!row.pubkey) {
-      warnings.push(`${row.name} on the ethstaker list has no usable relay URL; not added`);
+      if (String(row.pubkey ?? "").toLowerCase() !== (relayPubkey(known.url) ?? "")) {
+        warnings.push(`pubkey differs for ${known.name}; check by hand`);
+      }
       continue;
     }
     const id = uniqueId(slug(row.name), ids);
-    ids.add(id);
     const added = {
       id,
       name: row.name,
@@ -87,6 +85,13 @@ export function decide({ doc, probes, ethstaker, failures, today }) {
       statusSince: today,
       note: `new on the ethstaker list ${today}`,
     };
+    // Check the row on its own, so one bad row on the ethstaker page cannot block the whole check.
+    const problems = validateRelays({ schema: 1, updatedAt: today, network: "mainnet", relays: [added] });
+    if (problems.length) {
+      warnings.push(`${row.name} on the ethstaker list was not added: ${problems.join("; ")}`);
+      continue;
+    }
+    ids.add(id);
     newDoc.relays.push(added);
     byHost.set(row.host, added);
     changes.push(`added ${row.name} (not recommended)`);

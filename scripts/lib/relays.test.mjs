@@ -34,3 +34,9 @@ test("recommendedLive keeps file order and drops retired or not recommended", ()
   const d = doc([relay({ id: "a", url: "https://0x" + "a".repeat(96) + "@a.x" }), relay({ id: "b", url: "https://0x" + "b".repeat(96) + "@b.x", status: "retired", recommended: false }), relay({ id: "c", url: "https://0x" + "c".repeat(96) + "@c.x", recommended: false })]);
   assert.deepEqual(recommendedLive(d).map(r => r.id), ["a"]);
 });
+test("a relay url must be https with only a host after the key", () => {
+  const key = "0x" + "a".repeat(96);
+  for (const url of [`http://${key}@relay.ultrasound.money`, `https://${key}@relay.ultrasound.money/path`, `https://${key}@relay.ultrasound.money/`]) {
+    assert.ok(validateRelays(doc([relay({ url })])).some(s => s.includes("url must be")), url);
+  }
+});

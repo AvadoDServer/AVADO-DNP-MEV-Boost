@@ -75,7 +75,22 @@ test("a live relay is retired only after the third failed week in a row", () => 
   assert.equal(r.doc.relays[0].recommended, false);
   assert.equal(r.doc.relays[0].statusSince, today);
   assert.equal(r.doc.updatedAt, today);
-  assert.equal(r.failures["alpha.example.org"], undefined);
+  assert.equal(r.failures["alpha.example.org"], 3, "the count is kept so an unmerged retirement is not lost");
+});
+
+test("a relay still live on main with a carried count of 3 is retired again on the next failed week", () => {
+  // The retirement PR was not merged; the count came from the relay-check branch.
+  const r = decide({ doc: docOf(relay()), probes: { "alpha.example.org": failed("alpha.example.org") },
+    ethstaker: [], failures: { "alpha.example.org": 3 }, today });
+  assert.equal(r.doc.relays[0].status, "retired");
+  assert.deepEqual(r.changes, ["retired Alpha after 3 failed weekly checks"]);
+  assert.equal(r.failures["alpha.example.org"], 4);
+});
+
+test("a revived relay loses its count", () => {
+  const r = decide({ doc: docOf(relay({ status: "retired", recommended: false })),
+    probes: { "alpha.example.org": ok("alpha.example.org") }, ethstaker: [], failures: { "alpha.example.org": 3 }, today });
+  assert.deepEqual(r.failures, {});
 });
 
 test("a success resets the failure count of a live relay", () => {
@@ -141,6 +156,26 @@ test("a different pubkey on the ethstaker list is only a warning", () => {
   assert.deepEqual(r.warnings, ["pubkey differs for Alpha; check by hand"]);
   assert.deepEqual(r.changes, []);
   assert.deepEqual(r.doc, doc);
+});
+
+test("an invalid row on the ethstaker list is left out with a warning and the rest is still added", () => {
+  const r = decide({ doc: docOf(relay()), probes: {}, failures: {}, today, ethstaker: [
+    ethRow({ name: "Plain Http", host: "http.example.org", url: `http://${key("d")}@http.example.org`, pubkey: key("d") }),
+    ethRow({ name: "With Path", host: "path.example.org/x", url: `https://${key("e")}@path.example.org/x`, pubkey: key("e") }),
+    ethRow(),
+  ] });
+  assert.deepEqual(r.doc.relays.map(x => x.name), ["Alpha", "Beta Relay"]);
+  assert.deepEqual(r.changes, ["added Beta Relay (not recommended)"]);
+  assert.equal(r.warnings.length, 2);
+  assert.match(r.warnings[0], /^Plain Http on the ethstaker list was not added: .*url must be/);
+  assert.match(r.warnings[1], /^With Path on the ethstaker list was not added: .*url must be/);
+});
+
+test("the pubkey comparison ignores upper and lower case", () => {
+  const upper = "0x" + "A".repeat(96);
+  const r = decide({ doc: docOf(relay()), probes: {}, failures: {}, today,
+    ethstaker: [ethRow({ name: "Alpha", host: "alpha.example.org", url: `https://${upper}@alpha.example.org`, pubkey: upper })] });
+  assert.deepEqual(r.warnings, []);
 });
 
 test("with no changes updatedAt stays and the input is not modified", () => {

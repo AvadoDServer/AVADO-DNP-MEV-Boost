@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs";
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const PUBKEY = /^0x[0-9a-f]{96}$/;
+// https, a 96-hex public key, and a bare host: no other scheme, port, path or trailing slash.
+const RELAY_URL = /^https:\/\/0x[0-9a-f]{96}@[a-z0-9-]+(\.[a-z0-9-]+)+$/i;
 
 export function relayHost(url) {
   const after = String(url).split("@").pop().replace(/^https?:\/\//, "");
@@ -28,7 +30,7 @@ export function validateRelays(doc) {
     if (ids.has(r.id)) p.push(`${tag} duplicate id`);
     ids.add(r.id);
     if (!r.name) p.push(`${tag} name missing`);
-    if (!relayPubkey(r.url)) p.push(`${tag} url must be https://0x<96 hex>@host`);
+    if (!RELAY_URL.test(r.url || "")) p.push(`${tag} url must be https://0x<96 hex>@host`);
     const h = relayHost(r.url);
     if (hosts.has(h)) p.push(`${tag} duplicate host ${h}`);
     hosts.add(h);
