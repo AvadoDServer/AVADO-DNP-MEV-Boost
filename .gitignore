@@ -3,3 +3,6 @@ build_*
 releases.json
 testKeys
 node_modules/
+
+# Weekly relay check: the PR body, never committed
+.relay-check/summary.md
