@@ -56,7 +56,7 @@
       "recommended": false,
       "status": "live",
       "statusSince": "2026-10-11",
-      "note": "Not answering on 2026-10-11; not recommended until the weekly check sees it answer."
+      "note": "Not answering on 2026-10-11; the owner decides whether to recommend it again."
     },
     {
       "id": "flashbots",

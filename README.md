@@ -30,6 +30,8 @@ Each relay:
 | `statusSince` | The date the status last changed. |
 | `note` | A short sentence for people, or an empty string. |
 
+For the relays seeded on 2026-10-11, `statusSince` is the date the list was created, not the date the relay actually stopped.
+
 `scripts/relays.schema.json` describes the same rules for editors; `node scripts/check-relays.mjs` checks them.
 
 ## The weekly check
@@ -46,7 +48,7 @@ Some weeks the pull request only carries warnings (a relay missed one or two che
 
 The weekly pull request needs the repository setting **Allow GitHub Actions to create and approve pull requests** (Settings → Actions → General → Workflow permissions). A pull request opened by a workflow does not start the test workflow, so the check validates the list in the same run before it opens the pull request.
 
-Nothing reaches the boxes until the owner reviews and merges that pull request. Whether a relay should be recommended is always the owner's decision: edit `recommended` in the pull request before merging.
+Nothing reaches the boxes until the owner reviews and merges that pull request. Whether a relay should be recommended is always the owner's decision: merge the weekly pull request first, then change `recommended` in a separate pull request (edit `relays.json`, run `npm run render`, open a pull request). Edits pushed to the `relay-check` branch are overwritten by the next Monday run.
 
 To see what the check would do without changing any file: `node scripts/probe.mjs --dry-run`.
 
@@ -78,6 +80,8 @@ The relay defaults inside the package are only updated when a new version is rel
 3. Bump the version in `dappnode_package.json` and the image tag in `docker-compose.yml`.
 4. Run `npm run test:start`. It runs `build/start.sh` with plain `sh` against a stand-in for mev-boost and checks that retired relays are skipped, that "Relays in use" is printed, and that no minimum bid is passed unless `EXTRA_OPTS` sets one.
 5. Open a pull request. The build workflow builds the package; when it is merged (with a merge commit, never a squash, because the release job applies the build's diff) the release workflow publishes the new version. The owner moves it to production.
+
+A relay that comes back after being retired stays skipped by the running package's built-in list of retired hosts (`DEAD_RELAY_HOSTS` in `build/start.sh`) until the next package release.
 
 When the `RELAYS` default in `dappnode_package.json` no longer matches `relays.json`, the test workflow prints a warning line in its log (not in the job summary, and the job still passes); that is the reminder to prepare a release.
 

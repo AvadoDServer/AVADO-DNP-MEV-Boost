@@ -16,6 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - run: node scripts/check-relays.mjs
+      - run: node scripts/render.mjs --check
       - run: node scripts/publish.mjs
         env:
           BO_ADMIN_TOKEN: ${{ secrets.BO_ADMIN_TOKEN }}

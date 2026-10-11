@@ -59,7 +59,7 @@ export function decide({ doc, probes, ethstaker, failures, today }) {
     } else if (r.status === "retired" && probe.ok) {
       Object.assign(r, { status: "live", statusSince: today });
       delete newFailures[host];
-      changes.push(`${r.name} answers again; left not recommended`);
+      changes.push(`${r.name} answers again; left not recommended; boxes use it again after the next package release`);
     }
   }
 

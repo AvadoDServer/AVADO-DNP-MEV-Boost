@@ -108,7 +108,7 @@ test("a retired relay that answers again comes back live but not recommended", (
   assert.equal(r.doc.relays[0].status, "live");
   assert.equal(r.doc.relays[0].recommended, false);
   assert.equal(r.doc.relays[0].statusSince, today);
-  assert.deepEqual(r.changes, ["Alpha answers again; left not recommended"]);
+  assert.deepEqual(r.changes, ["Alpha answers again; left not recommended; boxes use it again after the next package release"]);
   assert.equal(r.doc.updatedAt, today);
 });
 

@@ -9,6 +9,9 @@ on:
       - .github/**
       - README.md
       - docs/**
+      - package.json
+      - .gitignore
+      - build/tests/**
 jobs:
   build:
     runs-on: ubuntu-22.04

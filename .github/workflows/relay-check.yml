@@ -5,6 +5,8 @@ on:
 permissions: { contents: write, pull-requests: write }
 jobs:
   check:
+    # A manual run from another branch must never open a PR from an unmerged list.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4

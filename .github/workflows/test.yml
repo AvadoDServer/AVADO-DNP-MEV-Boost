@@ -16,3 +16,4 @@ jobs:
       - run: npm test
       - run: node scripts/check-relays.mjs
       - run: node scripts/render.mjs --check
+      - run: sh build/tests/test-start.sh
