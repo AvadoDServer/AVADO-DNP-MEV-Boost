@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-11",
+  "updatedAt": "2026-10-26",
   "network": "mainnet",
   "relays": [
     {
@@ -54,8 +54,8 @@
       "about": "https://relay.wenmerge.com",
       "filtering": "none",
       "recommended": false,
-      "status": "live",
-      "statusSince": "2026-10-11",
+      "status": "retired",
+      "statusSince": "2026-10-26",
       "note": "Not answering on 2026-10-11; the owner decides whether to recommend it again."
     },
     {
